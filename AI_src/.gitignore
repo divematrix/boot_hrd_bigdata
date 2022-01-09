@@ -1,3 +1,11 @@
+### Custom List ###
+.idea/
+chap01/friend_list_from_df.csv
+chap01/friend_list_from_df.txt
+chap02/seoul
+chap02/seoul.pdf
+chap05/logs/
+
 ##############
 ### Python ###
 

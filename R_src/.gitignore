@@ -1,3 +1,7 @@
+### Custom List ###
+output/
+!output/dummy.txt
+
 #########
 ### R ###
 
