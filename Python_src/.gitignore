@@ -1,7 +1,9 @@
 ###################
 ### Custom List ###
 .idea/
-
+test.txt
+movie_quotes.txt
+test.db
 
 ##############
 ### Python ###
