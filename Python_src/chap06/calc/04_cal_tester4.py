@@ -1,3 +1,5 @@
+# 라이브러리 import 방법 4 - 별칭 사용
+
 import my_package.calculator as c
 
 print(c.plus(10,5))
