@@ -1,5 +1,5 @@
 import sys
-sys.path.append("T:\\workspace\\boot_hrd_bigdata\\Python_src")
+sys.path.append("C:\\workspace\\boot_hrd_bigdata\\Python_src")
 
 # sys.path 경로 아래에 있는 패키지는 import 가능
 from chap06.calc.luv_song import module02 as mod02
