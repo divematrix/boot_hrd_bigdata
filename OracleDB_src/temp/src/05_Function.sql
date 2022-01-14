@@ -14,7 +14,7 @@ select lower('Hong Kil Dong') "소문자" from dual;
 select upper('Hong Kil Dong') "대문자" from dual;
 
 --[5] initcap() : 첫자만 대문자로 변환
-select initcap('hoNG kIL doNG') "첫글자만 대문자 나머진 소문자" from dual;
+select initcap('hoNG kIL doNG') "첫글자 대문자" from dual;
 
 --[6] concat() : 문자열 연결
 select concat('더조은 IT ', '아카데미') "문자열 연결" from dual;
@@ -35,7 +35,8 @@ select lpad('Oracle', 20, '#') from dual;
 select rpad('Oracle', 20, '#') from dual;
 
 --[11] trim()
--- 컬럼이나 대상 문자열에서 특정 문자가 첫번째 글자이거나 마지막 글자이면
+-- 컬럼이나 대상 문자열에서 특정 문자가
+-- 첫번째 글자이거나 마지막 글자이면
 -- 잘라내고 남은 문자열만 반환.
 select trim('a' from 'aaaaOracleaaaaaa') from dual;
 select trim(' ' from '    Oracle   ') from dual;
@@ -83,7 +84,7 @@ select last_day(sysdate) from dual
 select to_char(sysdate, 'yyyy-mm-dd') from dual;
 
 --[23] to_date() : 날짜형(date)으로 변환
-select to_data('2009/12/31', 'yyyy/mm/dd') from dual;
+select to_date('2009/12/31', 'yyyy/mm/dd') from dual;
 
 --[24] nvl() : NULL인 데이터를 다른 데이터로 변경.
 select ename, comm, nvl(comm, 0), nvl(comm, 100) from emp;

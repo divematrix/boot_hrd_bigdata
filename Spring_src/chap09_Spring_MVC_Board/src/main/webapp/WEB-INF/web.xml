@@ -18,7 +18,7 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	<!-- 스프링 구동시 호출할 (business logic 설정 저장된) context.xml 지정 -->
+	<!-- 스프링 구동시 호출할 (business logic 설정 저장된) xml 파일 지정 -->
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -46,7 +46,7 @@
 	<!-- present logic : request의 url 패턴 만족시 맵핑된 설정 동작 -->
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
-		<url-pattern>*.do</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
 </web-app>

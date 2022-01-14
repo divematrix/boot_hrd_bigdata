@@ -1,5 +1,5 @@
 -- * 오라클 SQL 문 : 데이터 입력/출력(select)/수정/삭제
---                        (DML:Data Manipulation Language)
+-- (DML:Data Manipulation Language)
 
 --[1] 샘플 테이블 생성
 create table exam01(

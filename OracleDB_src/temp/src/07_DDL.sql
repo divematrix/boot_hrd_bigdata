@@ -54,4 +54,3 @@ drop table exam01 purge;
 truncate table exam02;
 
 select * from exam02;
-

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.springproject</groupId>
 	<artifactId>biz</artifactId>
-	<name>chap08_Spring_WebMVC</name>
+	<name>chap09_Spring_MVC_Board</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 

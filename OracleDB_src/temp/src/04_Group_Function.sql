@@ -24,4 +24,3 @@ select job, avg(sal) from emp group by job;
 
 -- Having 절 : 직업별 급여 평균(단, 급여 평균 2000이상 직업)
 select job, avg(sal) from emp group by job having avg(sal) >= 2000;
-
