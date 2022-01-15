@@ -21,8 +21,36 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="com.springproject.biz" />
+	<!-- servlet 작동시 (present logic) annotation 읽어오는 패키지 설정 -->
+	<context:component-scan base-package="com.springproject.prz" />
 	
+	<!-- dispatcher 가 키값 맵핑을 보고 java파일로 연결 -->
 	
+		<!-- Handler Mapping 등록 -->
+		<!-- 아이디 작성 안할시 클래스 첫글자를 소문자로 변환한 식별자를 쓴다 simpleUrlHandlerMapping -->
+		<beans:bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+			<beans:property name="mappings">
+				<beans:props>
+					<beans:prop key="/login.do">login</beans:prop>
+					<beans:prop key="/logout.do">logout</beans:prop>
+					<beans:prop key="/getBoardList.do">getBoardList</beans:prop>
+					<beans:prop key="/getBoard.do">getBoard</beans:prop>
+					<beans:prop key="/insertBoard.do">insertBoard</beans:prop>
+					<beans:prop key="/insertBoardProc.do">insertBoardProc</beans:prop>
+					<beans:prop key="/updateBoard.do">updateBoard</beans:prop>
+					<beans:prop key="/deleteBoard.do">deleteBoard</beans:prop>
+				</beans:props>
+			</beans:property>
+		</beans:bean>
+	
+		<!-- Controller 등록 : 작용할 클래스에 id 지정 -->
+		<beans:bean id="login" class="com.springproject.prz.user.controller.LoginController" />
+		<beans:bean id="logout" class="com.springproject.prz.user.controller.LogoutController" />
+		<beans:bean id="getBoardList" class="com.springproject.prz.board.controller.GetBoardListController" />
+		<beans:bean id="getBoard" class="com.springproject.prz.board.controller.GetBoardController" />
+		<beans:bean id="insertBoard" class="com.springproject.prz.board.controller.InsertBoardController" />
+		<beans:bean id="insertBoardProc" class="com.springproject.prz.board.controller.InsertBoardProcController" />
+		<beans:bean id="updateBoard" class="com.springproject.prz.board.controller.UpdateBoardController" />
+		<beans:bean id="deleteBoard" class="com.springproject.prz.board.controller.DeleteBoardController" />
 	
 </beans:beans>

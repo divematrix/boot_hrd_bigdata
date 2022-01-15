@@ -1,0 +1,27 @@
+chap09 에서 참조할것
+
+web.xml
+
+root-context.xml
+	namespace > context , aop , tx 설정
+	Annotation 읽어올 설정
+	Spring JDBC 설정 > 입력할 dataSource 설정 > property 설정 저장 파일 연결
+	transaction 설정
+
+servlet-context.xml
+	HandlerMapping > Controller Mapping (present logic) 설정
+
+sql
+	유저 테이블 생성
+	게시판 테이블 생성
+	
+jsp
+	login.jsp
+	getBoard.jsp
+	getBoardList.jsp
+	insertBoard.jsp
+	
+java
+
+jdbcTemplate 이용하여 db 연결
+	RowMapper<T> 이용 필요

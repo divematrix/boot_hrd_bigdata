@@ -1,0 +1,18 @@
+web.xml에
+	business logic, present logic 설정한 xml 파일 경로 저장
+	브라우저에서 서버에 요청한 주소가 저장된 형식을 만족하면 (*.do)
+	
+	-- present logic
+	
+	-- business logic
+		dispatcher가 controller를 작동하도록 맵핑
+		
+		controller 클래스에서
+		요청 주소 형식에 맞는 함수를 호출하면
+		개발자가 설정한 동작에 의해
+		ModelAndView 클래스를 반환값으로 얻게 되고
+		
+	
+		ModelAndView 반환값을 가지고 jsp에 적용시켜 얻은 html 문서를 브라우저에 응답
+	
+src > main > webapp 에 index.jsp 또는 index.html이 있으면 서버 초기시에 우선 응답

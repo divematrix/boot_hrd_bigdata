@@ -1,0 +1,5 @@
+servlet-context.xml
+	다국어 설정 + annotation-driven 설정 지우기(?)
+	
+src > main > webapp > WEB-INF > lib
+	spring-webmvc-버전.jar 추가

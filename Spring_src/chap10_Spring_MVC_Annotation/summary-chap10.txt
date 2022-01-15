@@ -1,0 +1,5 @@
+servlet-context.xml
+	Annotation 읽어올 설정 (HandelerMapping - ControllerMapping 설정 생략)
+	
+java - sql 설정
+	검색문 만들기

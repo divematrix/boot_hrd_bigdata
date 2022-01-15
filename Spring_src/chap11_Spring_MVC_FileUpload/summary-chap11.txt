@@ -1,0 +1,9 @@
+servlet-context.xml
+	파일 업로드 설정 (multipartResolver)
+	
+java
+	prz.board.controller 파일업로드 관련 설정
+
+jsp
+	파일 업로드 설정
+	

@@ -6,8 +6,11 @@
 select * from emp;
 select * from dept;
 
-select deptno from emp where ename = 'SCOTT'; -- 20
-select dname, loc from dept where deptno = 20;
+select deptno from emp
+where ename = 'SCOTT'; -- 부서번호 20 찾기
+
+select dname, loc from dept
+where deptno = 20;
 
 --[2] join(조인) 
 --- (1) cross join 

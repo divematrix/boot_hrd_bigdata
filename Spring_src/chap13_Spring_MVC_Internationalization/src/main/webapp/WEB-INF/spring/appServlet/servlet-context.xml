@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- servlet 작동시 (present logic) annotation 읽어오는 패키지 설정 -->
+	<context:component-scan base-package="com.springproject.prz" />
+	
+	<!-- 파일 업로드 설정 -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="1000000"></beans:property>
+	</beans:bean>
+	
+	<!-- 예외처리 방법 1 : ExceptionHandler Annotation
+	<mvc:annotation-driven></mvc:annotation-driven> -->
+	
+	<!-- 예외처리 방법 2 : xml 기반의 예외처리 -->
+	<beans:bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<beans:property name="exceptionMappings">
+			<beans:props>
+				<beans:prop key="java.lang.IllegalArgumentException">
+					common/arithmeticError
+				</beans:prop>
+				<beans:prop key="java.lang.NullPointerException">
+					common/nullPointerError
+				</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- 다국어 설정 -->
+	<!-- messageSource 등록 -->
+	<beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<beans:property name="basenames">
+			<beans:list>
+				<beans:value>message.messageSource</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- localeResolver 등록 -->
+	<beans:bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+
+	<!-- localChangeInterceptor 등록 -->
+	<mvc:interceptors>
+		<beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<beans:property name="paramName" value="lang"/>
+		</beans:bean>
+	</mvc:interceptors>
+</beans:beans>
