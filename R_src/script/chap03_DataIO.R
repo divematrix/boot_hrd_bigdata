@@ -29,7 +29,7 @@ df
 # 1) read.table() 함수 이용
 #   - 컬럼명이 없는 파일 불러오기
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+#setwd("C:/workspace/boot_hrd_bigdata/R_src")
 
 student <- read.table(file="data/student.txt")
 student
@@ -62,7 +62,7 @@ student4
 # 패키지 설치와 java 실행 환경 설정
 install.packages("rJava") # rJava 패키지 설치
 install.packages("xlsx")  # xlsx 패키지 설치
-Sys.setenv(JAVA_HOME='C:\\DevEnv\\jdk17_oracle')
+Sys.setenv(JAVA_HOME='C:\\DevEnv\\jdk11_oracle')
 
 # 관련 패키지 메모리 로드
 library(rJava)
@@ -169,7 +169,7 @@ print("x * y = ", z) # error
 # 2-2. 파일에 데이터 저장
 #  1) sink() 함수를 이용한 파일 저장
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+# setwd("C:/workspace/boot_hrd_bigdata/R_src")
 
 install.packages("RSADBE")
 library(RSADBE)

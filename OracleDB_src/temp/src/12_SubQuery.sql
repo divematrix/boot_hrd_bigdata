@@ -43,12 +43,23 @@ where	sal >= (select avg(sal)
 --[다중행 서브쿼리]
 ---- 예제)급여를 3000이상 받는 사원이 소속된 부서와 동일한
 ----       부서에서 근무하는 사원들의 정보를 출력하세요.
+select deptno, ename
+from emp 
+where sal >= 3000;
+
 select ename, sal, deptno
 from emp
 where deptno in (select deptno
 				from emp
 				where sal >= 3000);
 
+-- failed
+select ename, sal, deptno
+from emp
+where deptno = (select deptno
+                from emp 
+                where sal >= 3000);
+                
 ---- (1) [in 연산자]
 
 ----[문제] in 연산자를 이용하여 부서별로 가장 급여를 많이
@@ -60,11 +71,20 @@ where	sal	in	(	select max(sal)
 					from emp
 					group by deptno	);
 
+select ename, sal, deptno
+from emp
+where deptno in (select deptno
+				from emp 
+				where sal >= 3000);
+
 ---- (2) [all 연산자]
 
 ----     [예시] 30번(부서번호) 소속 사원들 중에서 급여를 가장
 --                많이 받는 사원보다 더 많은 급여를 받는 사원의
 --                이름과 급여를 출력하세요.
+
+select max(sal) from emp
+where deptno = 30; -- 2580
 
 --[단일행서브쿼리 & 그룹함수]
 select ename, sal
@@ -76,10 +96,17 @@ where sal > (select max(sal)
 --[다중행 서브쿼리]
 select ename, sal
 from emp
-where sal >all (select sal
+where sal > all (select sal
 				from emp
 				where deptno = 30);
 
+-- failed
+select ename, sal 
+from emp
+where sal > (select sal 
+			from emp
+			where deptno = 30);
+             
 --[문제] 영업사원(salesman)들보다 급여를 많이 받는 사원들의
 --          이름과 급여를 출력하되 영업사원은 출력하지 않게
 --          명령문을 작성해 보세요.
@@ -118,4 +145,3 @@ from	emp
 where	sal >any (	select	sal
 					from	emp
 					where	job = 'SALESMAN'	);
-

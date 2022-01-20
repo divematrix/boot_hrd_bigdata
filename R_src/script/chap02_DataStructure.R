@@ -297,7 +297,7 @@ class(memp) # "data.frame"
 
 # txt 파일 이용 객체 생성
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+# setwd("C:/workspace/boot_hrd_bigdata/R_src")
 
 txtemp <- read.table('data/emp.txt', header = T, sep = "")
 txtemp

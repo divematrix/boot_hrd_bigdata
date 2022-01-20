@@ -121,7 +121,7 @@ ifelse(score >= 80, "우수", "노력")
 
 # ifelse() 응용
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+# setwd("C:/workspace/boot_hrd_bigdata/R_src")
 
 excel <- read.csv("data/excel.csv", header = T)
 excel
@@ -256,7 +256,7 @@ add
 # 기술 통계량을 계산하는 함수 정의 
 # 파일 불러오기
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+# setwd("C:/workspace/boot_hrd_bigdata/R_src")
 
 # read.~() 은 테이블로 반환, 테이블은 데이터 프레임, 데이터 프레임은 matrix
 test <- read.csv("data/test.csv", header = T)

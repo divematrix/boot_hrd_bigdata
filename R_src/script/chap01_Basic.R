@@ -152,4 +152,4 @@ example(sum)
 
 # 작업 공간 지정
 getwd()
-setwd("C:/workspace/class_bigdata_R")
+# setwd("C:/workspace/boot_hrd_bigdata/R_src")

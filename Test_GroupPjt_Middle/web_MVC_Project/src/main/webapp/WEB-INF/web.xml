@@ -4,6 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
 
+	<!-- 웹 요청과 응답에 대한 인코딩 처리 -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -17,17 +18,20 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+	<!-- 스프링 구동시 호출할 (business logic 설정 저장된) xml 파일 지정 -->
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+		<param-value>classpath:root-context.xml</param-value>
 	</context-param>
-	
+
+	<!-- 톰캣 구동 - 리스너 동작 - 스프링 xml 파일을 해석하여 bean 생성 -->
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	<!-- 서블릿 구동시 호출할 Dispatcher와 (presentation logic 설정 저장된) xml 파일 지정  -->
 	<!-- Processes application requests -->
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
@@ -38,10 +42,11 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-		
+
+	<!-- request의 url 패턴 만족시 servlet 동작해 dispatcher 준비 : present logic -->
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
 
 </web-app>
