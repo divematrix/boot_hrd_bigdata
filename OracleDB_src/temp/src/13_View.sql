@@ -158,6 +158,12 @@ where deptno = 30;
 --[10] 뷰 생성에 사용되는 다양한 옵션(force/noforce : default - noforceehls)
 select * from employees;
 
+create or replace view employees_view
+as
+select empno, ename, deptno
+from employees
+where deptno = 30; --failed
+
 create or replace force view employees_view
 as
 select empno, ename, deptno
@@ -168,7 +174,7 @@ select view_name, text
 from user_views;
 
 insert into employees_view
-values(8020, '철수', 30);
+values(8020, '철수', 30); --failed
 
 --[11] 뷰 생성에 사용되는 다양한 옵션(with check option)
 create or replace view emp_view30
@@ -191,6 +197,8 @@ as
 select empno, ename, sal, comm, deptno
 from emp_copy
 where deptno = 30 with check option;
+
+select * from view_chk30;
 
 update view_chk30
 set deptno = 20

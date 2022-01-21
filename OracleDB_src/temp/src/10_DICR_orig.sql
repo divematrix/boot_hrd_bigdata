@@ -3,7 +3,7 @@
 --   1) 데이터 무결성 제약 조건(Data Integrity Constraint Rule)
 --   2) 종류
 
-SQL>desc USER_CONSTRAINTS; -- [command] 창에서 확인할 것.
+SQL>   -- [command] 창에서 확인할 것.
 
 
 -- * USER_CONS_COLUMNS  데이터 딕셔너리 뷰
