@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommentDAO">
+	<!-- 추가 설정 -->
+	
+	<!-- 기본 설정
+	<insert id="insert">
+		<![CDATA[
+		insert into comments
+		(num, imageKey, masterid, content, uploadDate)
+		values
+		((select nvl(max(num), 0)+1 from comments)
+		, #{imageKey}
+		, #{masterid}
+		, #{content}
+		, sysdate)
+		]]>
+	</insert>
+	<select id="selectList" resultType="comment">
+		<![CDATA[
+		select * from comments
+		where imageKey=#{imageKey}
+		]]>
+	</select>
+	<select id="selectOne" resultType="comment">
+		<![CDATA[
+		select * from comments
+		where num=#{num}
+		]]>
+	</select>
+	<update id="update">
+		<![CDATA[
+		update comments set
+		content=#{content}
+		where num=#{num}
+		]]>
+	</update>
+	<delete id="delete">
+		<![CDATA[
+		delete from comments
+		where num=#{num}
+		]]>
+	</delete> -->
+</mapper>

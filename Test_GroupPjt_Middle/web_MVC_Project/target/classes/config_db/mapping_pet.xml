@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PetDAO">
+	<!-- 추가 설정 -->
+	<!-- 기본 설정
+	<insert id="insert">
+		<![CDATA[
+		insert into pets
+		(petKey, masterId, name, petImage, birthDate)
+		values
+		((select nvl(max(petKey), 0)+1 from pets)
+		, #{masterId}
+		, #{name}
+		, #{petImage, jdbcType=VARCHAR}
+		, #{birthDate, jdbcType=VARCHAR})
+		]]>
+	</insert>
+	<select id="selectList" resultType="pet">
+		<![CDATA[
+		select * from pets
+		where masterId=#{masterId, jdbcType=VARCHAR}
+		order by petKey desc
+		]]>
+	</select>
+	<select id="selectOne" resultType="pet">
+		<![CDATA[
+		select * from pets
+		where petKey=#{petKey}
+		]]>
+	</select>
+	<update id="update">
+		<![CDATA[
+		update pets set
+		name=#{name}
+		, petImage=#{petImage, jdbcType=VARCHAR}
+		, birthDate=#{birthDate, jdbcType=VARCHAR}
+		where petKey=#{petKey}
+		]]>
+	</update>
+	<delete id="delete">
+		<![CDATA[
+		delete
+		from pets
+		where petKey=#{petKey}
+		]]>
+	</delete> -->
+</mapper>

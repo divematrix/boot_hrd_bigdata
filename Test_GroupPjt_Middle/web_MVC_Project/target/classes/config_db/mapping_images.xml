@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ImageDAO">
+	<!-- 추가 설정 -->
+	<!-- 기본 설정
+	<insert id="insert">
+		<![CDATA[
+		insert into imageboard
+		(seq, masterId
+		, title, content
+		, uploadDate, fileName)
+		values
+		((select nvl(max(seq), 0)+1 from imageboard)
+		, #{masterId}
+		, #{title}
+		, #{content}
+		, sysdate
+		, #{fileName, jdbcType=VARCHAR})
+		]]>
+	</insert>
+	<select id="selectList" resultType="image">
+		<![CDATA[
+		select * from imageboard
+		order by seq desc
+		]]>
+	</select>
+	<select id="selectOne" resultType="image">
+		<![CDATA[
+		select * from imageboard
+		where seq=#{seq}
+		]]>
+	</select>
+	<delete id="delete">
+		<![CDATA[
+		delete from imageboard
+		where seq=#{seq}
+		]]>
+	</delete> -->
+</mapper>

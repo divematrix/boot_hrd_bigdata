@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserDAO">
+	<!-- 기본 설정
+	<insert id="insert">
+		<![CDATA[
+		insert into friendPet_User
+		(id, password, name, profileImage, email, joinDate)
+		values
+		(#{id}
+		, #{password}
+		, #{name}
+		, #{profileImage, jdbcType=VARCHAR}
+		, #{email}
+		, sysdate)
+		]]>
+	</insert>
+	<select id="selectList" resultType="user">
+		<![CDATA[
+		select * from member
+		]]>
+	</select>
+	<select id="selectOne" resultType="user">
+		<![CDATA[
+		select * from member
+		where id=#{id}
+		]]>
+	</select>
+	<update id="update">
+		<![CDATA[
+		update member set
+		password=#{password, jdbcType=VARCHAR},
+		name=#{name, jdbcType=VARCHAR},
+		profileImage=#{profileImage, jdbcType=VARCHAR},
+		email=#{email, jdbcType=VARCHAR}
+		where id=#{id}
+		]]>
+	</update>
+	<update id="updatePw">
+		<![CDATA[
+		update member set
+		password=#{password, jdbcType=VARCHAR}
+		where id=#{id}
+		]]>
+	</update>
+	<delete id="delete">
+		<![CDATA[
+		delete from member
+		where id=#{id}
+		]]>
+	</delete> -->
+	
+		<!-- 추가 설정
+	<update id="update_C">
+		<![CDATA[
+		update member set name = #{name} , address = #{address} , email = #{email} where id = #{id}
+		]]>
+	</update>
+	<update id="update_P">
+		<![CDATA[
+		update member set password = #{password} where id = #{id}
+		]]>
+	</update> -->
+</mapper>
