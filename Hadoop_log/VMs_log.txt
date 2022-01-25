@@ -1,0 +1,52 @@
+00 -----
+	Hadoop 설치
+		HDFS
+		YARN
+		Zookeeper
+	Cloudera Manager : stop - 리소스 많이 쓴다
+	HDFS 설정
+	YARN 설정
+	HDFS 구성 재배포 - 클러스터 적용
+	HDFS 설치 확인
+	Zookeeper 설치 확인
+01 -----
+	스마트카 로그 시뮬레이터 설치
+	설치 bigdata.smartcar.loggen-1.0.jar
+	실행 com.wikibook.bigdata.smartcar.loggen.DriverLogMain 날짜 차대수
+	실행 com.wikibook.bigdata.smartcar.loggen.CarLogMain 날짜 차대수
+	추적 관찰 tail -f [파일이름]
+	실행중 프로그램 보기 ps -ef | grep [~]
+	실행중 프로그램 정지 kill -9 [pid]
+02 -----
+	Flume 추가 설치
+	Kafka 추가 설치
+	Flume 수집 기능 구현 설정
+	Kafka 기능 구현
+	Flume 수집 기능 점검
+	Flume 적재 기능 테스트
+03 -----
+	HBase 설치
+	HBase 테스트
+	Redis 설치 (putty)
+	Redis 설치 점검 1
+	Redis 서버 설정 셋팅
+	Redis 설치 점검 2
+	Storm 설치 (putty)
+	스톰 UI 작동
+	HBase 테이블 생성
+	Storm Topology 배포
+	스톰 UI 접속
+	Cluster 1 재시작
+	실시간 적재 기능 테스트
+05 -----
+	Hive 설치
+	Oozie 설치
+	Hue 설치 전 작업 (putty)
+	Hue 설치
+	Spark 설치 (CM)
+06 -----
+	Hue를 이용한 데이터 탐색
+		HDFS / Hive - External
+	데이터셋 추가
+	추가 항목에 대한 Hive External 테이블 정의
+	스파크를 이용한 추가 데이터셋 탐색

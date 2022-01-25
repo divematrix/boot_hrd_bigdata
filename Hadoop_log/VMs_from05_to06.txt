@@ -1,0 +1,98 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+
+service storm-nimbus start
+service storm-supervisor start
+service storm-ui start
+service redis_6379 start
+-----
+
+Hive 설치 (CM)
+	서비스 추가 > Hive 선택
+		HBase 연동때문에 Cluster 1 구동하면서 진행해야 한다
+	select Dependencies : HBase 있는것 선택
+	Assign Roles
+		Gateway : server02
+		Hive Metastore Server : server02
+		HiveServer2 : server02
+	Setup Database : Test 선택후 그냥 진행
+	Command Details > First Run Command
+		HBase 연동 때문에 Fail 발생하면 멈추고 이미 설치된 Hive 를 멈춤, 삭제후 다시 진행해야 한다.
+
+Oozie 설치 (CM)
+	서비스 추가 > Oozie 선택
+		HBase 연동때문에 Cluster 1 구동하면서 진행해야 한다
+	select Dependencies : HBase, Hive 있는 것 선택
+	Assign Roles
+		Oozie Server : server02
+	Setup Database : Test 선택후 그냥 진행
+	Command Details > First Run Command
+		HBase 연동 때문에 Fail 발생하면 멈추고 이미 설치된 Hive 를 멈춤, 삭제후 다시 진행해야 한다.
+
+Oozie > Configuration
+	oozie.launcher.default.memory.mb : 1 GiB
+
+Hue 설치 (putty : server02)
+	설치 전 작업 1
+		mkdir /var/cache/yum/x86_64/6/centos-sclo-rh
+		mkdir /var/cache/yum/x86_64/6/centos-sclo-sclo
+		echo "https://vault.centos.org/6.10/sclo/x86_64/rh/" > /var/cache/yum/x86_64/6/centos-sclo-rh/mirrorlist.txt
+		echo "https://vault.centos.org/6.10/sclo/x86_64/sclo/" > /var/cache/yum/x86_64/6/centos-sclo-sclo/mirrorlist.txt
+
+		echo "https://vault.centos.org/6.10/os/x86_64/" > /var/cache/yum/x86_64/6/base/mirrorlist.txt
+		echo "https://vault.centos.org/6.10/extras/x86_64/" > /var/cache/yum/x86_64/6/extras/mirrorlist.txt
+		echo "https://vault.centos.org/6.10/updates/x86_64/" > /var/cache/yum/x86_64/6/updates/mirrorlist.txt
+
+
+	설치 전 작업 2 : Python 2.7 설치
+		yum install -y centos-release-scl
+		yum install -y scl-utils
+		yum install -y python27
+		source /opt/rh/python27/enable
+		python --version
+			설치 완료 후 버전 확인
+
+	Hue 설치 1 : Python 패키지 설치
+		yum --enablerepo=extras install epel-release
+		yum install -y python-pip
+		yum install -y postgresql-devel
+		bash -c "source /opt/rh/python27/enable; pip install psycopg2==2.6.2 --ignore-installed"
+
+	Hue 설치 2 (CM)
+		서비스 추가 > Hue 선택
+		select Dependencies
+			HBase, HDFS, Hive, Oozie 모두 있는 것 선택
+		Assign Roles
+			Hue Server : server02
+		Setup Database : Test 선택후 그냥 진행
+
+Hue > Configuration
+	time_zone : Asia/Seoul
+	HBase Thrift 서버 : server02 확인
+	Hue 재시작
+
+Spark 설치 (CM)
+	서비스 추가 > Spark 선택
+	select Dependencies
+			HBase 있는 것 선택
+	Assign Roles
+			History Server : server02
+			Gateway : server02
+	YARN 재시작
+	Spark 구성 재배포
+	Spark 시작
+	Spark : History Web UI
+	Cluster 재시작
+
+-----
+service redis_6379 stop
+service storm-nimbus stop
+service storm-supervisor stop
+service storm-ui stop
+
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

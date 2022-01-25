@@ -1,0 +1,74 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+-----
+
+putty1 : server02
+
+	작업 관련 폴더 생성
+		mkdir /home/pilot-pjt
+		mkdir /home/pilot-pjt/working
+		mkdir /home/pilot-pjt/working/car-batch-log
+		mkdir /home/pilot-pjt/working/driver-realtime-log
+
+	프로젝트 관련 폴더 접근관리
+		chmod 777 -R /home/pilot-pjt
+
+	자바 버전 관리
+		java -version
+			자바 버전 확인
+		rm /usr/bin/javac
+		rm /usr/bin/java
+			기존 자바 링크 삭제
+		ln -s /usr/java/jdk1.8.0_181-cloudera/bin/javac /usr/bin/javac
+		ln -s /usr/java/jdk1.8.0_181-cloudera/bin/java /usr/bin/java
+			새로운 자바 링크 생성 (1.8이상)
+
+스마트카 로그 시뮬레이터
+	파일질라
+		/CH02/bigdata.smartcar.loggen-1.0.jar 를
+		server02 : /home/pilot-pjt/working 에 업로드
+
+	putty1 : server02
+		cd /home/pilot-pjt/working
+			폴더 이동
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.DriverLogMain 20211027 3
+			스마트카 로그 시뮬레이터 실행
+			새로운 명령어 입력창이 안나옴
+
+	putty2 : server02
+		cd /home/pilot-pjt/working/driver-realtime-log/
+			폴더 이동
+		tail -f SmartCarDriverInfo.log
+			시뮬레이터가 생성한 로그파일 내용 출력
+		ctrl + c
+			계속 출력되던 내용을 멈춤
+		ps -ef | grep smartcar.log
+			작동중인 프로그램 출력
+			로그 시뮬레이터 pid 확인 : root 오른쪽 첫번째 숫자
+		kill -9 [시뮬레이터pid]
+			시뮬레이터 멈춤
+			putty1에 새로운 명령어 입력창 생성
+
+	putty1 : server02
+		cd /home/pilot-pjt/working
+			폴더 이동
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.CarLogMain 20211027 3 &
+			스마트카 로그 시뮬레이터 실행
+			& 를 붙이면 프로그램 실행중에도 새로운 명령창이 나온다 (pid가 출력)
+		cd /home/pilot-pjt/working/SmartCar/
+			폴더 이동
+		tail -f SmartCarStatusInfo_20211027.txt
+			로그파일 내용 출력
+		ctrl + c
+			프로그램 멈춤
+		kill -9 [시뮬레이터 pid]
+
+	putty1,2 : logout
+
+-----
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

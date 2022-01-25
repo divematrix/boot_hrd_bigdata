@@ -1,0 +1,156 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+-----
+
+HBase 설치
+	Cluster 1 서비스 추가 : HBase 선택
+	Master : server02
+	Thriftserver : server02
+	RegionServer : server02
+	HBase > Configuration
+		hbase.regionserver.thrift.http > HBase (Service-Wide) : check
+	HBase 재시작
+	HBase : 구성 재배포
+	HBase 재시작
+
+HBase 테스트
+	putty 1 : server02
+		hbase shell
+			hbase shell 실행
+		create 'smartcar_test_table', 'cf'
+		put 'smartcar_test_table', 'row-key1', 'cf:model', 'Z0001'
+		put 'smartcar_test_table', 'row-key1', 'cf:no', '12345'
+		get 'smartcar_test_table', 'row-key1'
+		disable 'smartcar_test_table'
+		drop 'smartcar_test_table'
+		exit
+			hbase shell 종료
+
+HBase > Web UI : HBase 웹 관리자 화면 - 다양한 상태 모니터링
+저사양 파일럿 환경 : HBase 중지
+
+Redis 설치
+	putty 1 : server02
+		echo "https://vault.centos.org/6.10/os/x86_64/" > /var/cache/yum/x86_64/6/base/mirrorlist.txt
+		echo "https://vault.centos.org/6.10/extras/x86_64/" > /var/cache/yum/x86_64/6/extras/mirrorlist.txt
+		echo "https://vault.centos.org/6.10/updates/x86_64/" > /var/cache/yum/x86_64/6/updates/mirrorlist.txt
+
+		yum install -y gcc*
+		yum install -y tcl
+
+		cd /home/pilot-pjt/
+		wget http://download.redis.io/releases/redis-5.0.7.tar.gz
+			압축 파일 다운
+		tar -xvf redis-5.0.7.tar.gz
+			압축 풀기
+		ls
+			redis-5.0.7 폴더 확인
+		cd redis-5.0.7
+		make
+		make install
+		cd /home/pilot-pjt/redis-5.0.7/utils/
+		chmod 755 install_server.sh
+		./install_server.sh
+
+Redis 설치 점검 1
+	putty1 : server02
+		service redis_6379 status
+		service redis_6379 stop
+		service redis_6379 start
+		service redis_6379 restart
+
+Redis 서버 설정 셋팅
+	vi /etc/redis/6379.conf
+	(i누르면 편집모드 esc로 읽기모드)
+		bind 127.0.0.1
+			>> #bind 127.0.0.1
+			주석처리
+		protected-mode yes
+			yes >> no 변경
+	(읽기모드에서 콜론)
+		:wq! 변경사항 저장후 종료
+		:q! 그냥 종료
+
+Redis 설치 점검 2
+	redis-cli
+	set key:1 Hello!BigData
+	get key:1
+	del key:1
+	quit
+
+Storm 설치
+	putty 1 : server02
+		cd /home/pilot-pjt/
+		wget http://archive.apache.org/dist/storm/apache-storm-1.2.3/apache-storm-1.2.3.tar.gz
+		ls
+		tar -xvf apache-storm-1.2.3.tar.gz
+		ln -s apache-storm-1.2.3 storm
+		cd /home/pilot-pjt/storm/conf/
+		vi storm.yaml
+			추가
+			storm.zookeeper.servers:
+			 - "server02.hadoop.com"
+			
+			storm.local.dir: "/home/pilot-pjt/storm/data"
+
+			nimbus.seeds: ["server02.hadoop.com"]
+
+			supervisor.slots.ports:
+			 - 6700
+
+			ui.port: 8088
+		cd /home/pilot-pjt/storm/log4j2/
+		vi cluster.xml
+			<loggers>
+				<Logger level="" ...>
+					3개의 level 값을 error로 설정
+				<root level="" ...>
+					1개의 level 값을 error로 설정
+		vi worker.xml
+			<loggers>
+				<root level="" ...>
+					1개의 level 값을 error로 설정
+				<Logger level="" ...>
+					3개의 level 값을 error로 설정
+		vi /root/.bash_profile
+			PATH=$PATH:/home/pilot-pjt/storm/bin 추가
+		source /root/.bash_profile
+		자바 1.8.x 버전 확인
+
+	파일질라
+		/CH05/예제-5.1/storm-nimbus
+		/CH05/예제-5.1/storm-supervisor
+		/CH05/예제-5.1/storm-ui
+		3개 파일을
+		server02 : /etc/rc.d/init.d 에 복사
+
+	putty 1 : server02
+		chmod 755 /etc/rc.d/init.d/storm-nimbus
+		chmod 755 /etc/rc.d/init.d/storm-supervisor
+		chmod 755 /etc/rc.d/init.d/storm-ui
+
+		mkdir /var/log/storm
+		mkdir /var/run/storm
+
+		service storm-nimbus start
+		service storm-supervisor start
+		service storm-ui start
+
+		service storm-nimbus status
+		service storm-supervisor status
+		service storm-ui status
+
+	http://server02.hadoop.com:8088 : 스톰 UI
+
+-----
+service redis_6379 stop
+service storm-nimbus stop
+service storm-supervisor stop
+service storm-ui stop
+
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

@@ -1,0 +1,160 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+
+service storm-nimbus start
+service storm-supervisor start
+service storm-ui start
+service redis_6379 start
+-----
+
+클러스터 1 재시작
+
+임팔라 설치
+	서비스 추가 > 임팔라
+	Assign Roles
+		StateStore : server02
+		Catalog Server : server02
+		Daemon : server02
+	Hue > Configuration
+		Impala Service : Impala check
+	Impala restart
+	Hue restart
+	휴 UI : Editor > Impala 생성
+
+스쿱 설치
+	서비스 추가 > Scoop 1 client
+	Assign Roles
+		Gateway : server02
+	Scoop : 구성 재배포
+		클러스터 내부가 실행되지 않았을 경우 재구성 보이지 않았다
+
+제플린 설치(Putty)
+	putty : server02
+		cd /home/pilot-pjt
+		wget http://archive.apache.org/dist/zeppelin/zeppelin-0.8.2/zeppelin-0.8.2-bin-all.tgz
+		tar -xvf zeppelin-0.8.2-bin-all.tgz
+		ln -s zeppelin-0.8.2-bin-all zeppelin
+		cd /home/pilot-pjt/zeppelin/conf/
+		cp zeppelin-env.sh.template zeppelin-env.sh
+		vi zeppelin-env.sh
+			추가
+			export JAVA_HOME=/usr/java/jdk1.8.0_181-Cloudera
+			export SPARK_HOME=/opt/cloudera/parcels/CDH/lib/spark
+			export HADOOP_CONF_DIR=/etc/hadoop/conf
+		chmod 777 /tmp/hive
+		cp /etc/hive/conf/hive-site.xml /home/pilot-pjt/zeppelin/conf/
+		cd /home/pilot-pjt/zeppelin/conf/
+		cp zeppelin-site.xml.template zeppelin-site.xml
+		vi zeppelin-site.xml
+			property-name:zeppelin.server.addr
+				value 변경 : 0.0.0.0
+			property-name:zeppelin.server.port
+				value 변경 : 8081
+		vi /root/.bash_profile
+			추가
+			PATH=$PATH:/home/pilot-pjt/zeppelin/bin
+		source /root/.bash_profile
+	zeppelin-daemon.sh start
+		제플린 실행
+		server02.hadoop.com:8081
+
+머하웃 설치
+	putty : server02
+		cd /home/pilot-pjt/
+		wget http://archive.apache.org/dist/mahout/0.13.0/apache-mahout-distribution-0.13.0.tar.gz
+		tar -xvf apache-mahout-distribution-0.13.0.tar.gz
+		ln -s apache-mahout-distribution-0.13.0 mahout
+		vi /root/.bash_profile
+			추가
+			PATH=$PATH:/home/pilot-pjt/mahout/bin
+			export JAVA_HOME=/usr/java/jdk1.8.0_181-cloudera
+		source /root/.bash_profile
+		mahout
+
+임팔라를 이용한 데이터 실시간 분석
+	휴 > Editor > 임팔라
+		select * from managed_smartcar_symptom_info where biz_date='20211111' > execute
+		select * from managed_smartcar_emergency_check_info where biz_date='20211110' > execute
+		select * from managed_smartcar_item_buylist_info where biz_month='202003' > execute
+		impalaSQL/7.35.sql 복붙 > execute
+
+제플린을 이용한 데이터 실시간 분석
+	putty : server02
+		cd /home/pilot-pjt/zeppelin/bin/
+		./zeppelin-daemon.sh status > zeppelin running ok
+	제플린 홈페이지 : server02.hadoop.com:8081
+		note 생성 : SmartCar-Project
+			%sh 밑 7.42 추가
+				날짜 조정
+		execute > 결과 확인
+
+		7.43 복붙 (%sh 제거) > execute
+			날짜 조정
+		(%spark.sql 입력 후) 7.45 복붙 > execute > 결과 확인
+		(%spark.sql 입력 후) 7.48 복붙 > execute > 결과 확인
+
+머하웃 추천 : 스마트카 차량용품 추천
+	휴 > 편집기 > Hive
+		HiveQL : 7.52.hql 복붙 > Execute
+	putty : server02
+		more /home/pilot-pjt/mahout-data/recommendation/input/*
+		hdfs dfs -mkdir -p /pilot-pjt/mahout/recommendation/input
+		hdfs dfs -put /home/pilot-pjt/mahout-data/recommendation/input/* /pilot-pjt/mahout/recommendation/input/item_buylist.txt
+		mahout recommenditembased -i /pilot-pjt/mahout/recommendation/input/item_buylist.txt -o /pilot-pjt/mahout/recommendation/output/ -s SIMILARITY_COOCCURRENCE -n 3
+			i : 추천 분석에 사용할 입력 데이터
+			o : 추천 분석 결과가 출력될 경로
+			s : 추천을 위한 유사도 알고리즘
+			n : 추천할 아이템 개수
+	휴 > 파일 브라우저
+		/pilot-pjt/mahout/recommendation/output
+		파일 part-r-00000 확인
+	추천분석을 재실행할 때는 기존 결과 파일을 삭제한 후 재실행 해야 한다
+		hdfs dfs -rm -R -skipTrash /pilot-pjt/mahout/recommendation/output
+		hdfs dfs -rm -R -skipTrash /user/root/temp
+
+스파크ML 분류 : 스마트카 상태 정보 예측/분류
+	휴 > 편집기 > Hive
+		HiveQL/7.60복붙 > Execute > 성공메세지
+	경로 /home/pilot-pjt/spark-data/classification/input
+		000000_0 파일 확인
+	putty : server02
+		cd /home/pilot-pjt/spark-data/classification/input/
+		ls : 000000_00 확인
+		cat 000000_0 > classification_dataset.txt
+		cat 000000_0 000001_0 > classification_dataset.txt
+		hdfs dfs -mkdir -p /pilot-pjt/spark-data/classification/input
+		hdfs dfs -put /home/pilot-pjt/spark-data/classification/input/classification_dataset.txt /pilot-pjt/spark-data/classification/input
+		zeppelin-daemon.sh restart > ok 확인
+	zeppelin 페이지 : server02.hadoop.com:8081
+		create notebook : SmartCar-classification
+		SparkML-Classification.scala 순서대로 실행
+
+스쿱을 이용한 분석 결과 외부 제공
+	putty 1 : server01
+		cat /var/lib/cloudera-scm-server-db/data/generated_password.txt
+		결과 확인 : 본인의 db 비밀번호 확인
+			vsqBur5ygT
+		psql -U cloudera-scm -p 7432 -h localhost -d postgres
+			비번 입력
+		postgres
+			create table smartcar_item_buylist_info (car_number varchar, sex varchar, age varchar, marriage varchar, region varchar, job varchar, car_capacity varchar, car_year varchar, car_model varchar, item varchar, score varchar);
+			select * from smartcar_item_buylist_info
+	putty 2 : server01
+		cp /opt/cloudera/parcels/CDH/jars/postgresql-*.jar /opt/cloudra/parcels/CDH/lib/sqoop/lib
+		sqoop export --connect jdbc:postgresql://192.168.56.101:7432/postgres --username cloudera-scm --password 비번 --table smartcar_item_buylist_info --export-dir /user/hive/warehouse/managed_smartcar_item_buylist_info/biz_month=202003
+	putty 1 : server01
+		postgres
+			select * from smartcar_item_buylist_info;
+
+-----
+service redis_6379 stop
+service storm-nimbus stop
+service storm-supervisor stop
+service storm-ui stop
+
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

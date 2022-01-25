@@ -1,0 +1,295 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+
+service storm-nimbus start
+service storm-supervisor start
+service storm-ui start
+service redis_6379 start
+-----
+
+Hue를 이용한 데이터 탐색
+	Hue 웹 UI 접속
+	welcome : x - pass
+
+Hue를 이용한 HDFS에 적재된 데이터 탐색
+	Hue UI > Browser > File
+		경로 : /pilot-pjt/collect/car-batch-log/wrk_date[~]
+			my : 20211107
+		폴더 내부의 파일 내용 확인
+
+Hue를 이용한 HBase에 적재된 데이터 탐색
+	Hue UI > Browser > HBase
+		DriverCarInfo
+
+Hive를 이용한 External 데이터 탐색
+	Hue UI > Query 옵션 > Editor > Hive
+		/CH06/HiveQL/그림-6.44.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			왼쪽 목록 : smartcar_status_info
+		/CH06/HiveQL/그림-6.45.hql 드래그앤드랍
+			sql문 wrk_date 확인
+				/pilot-pjt/collect/car-batch-log/wrk_date[~] 의 ~
+			Execute or CTRL + ENTER
+			success 메세지
+
+테이블에서 데이터 읽어오기
+	Hue UI > Query 옵션 > Editor > Hive
+		/CH06/HiveQL/그림-6.46.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			결과 확인 : 5개 나와야
+		/CH06/HiveQL/그림-6.48.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			결과 확인
+
+Hive Query 모니터링
+	Job 탭
+
+Hive를 이용한 HBase 데이터 탐색 - 테이블 생성
+	Hue UI > Query 옵션 > Editor > Hive
+		/CH06/HiveQL/그림-6.51.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			Table : smartcar_drive_info 확인
+		입력 : select * from smartcar_drive_info limit 10;
+			Execute or CTRL + ENTER
+			결과 출력 확인
+
+데이터셋 추가 (CarMaster.txt)
+	Hue UI > Browser > File
+		경로 /pilot-pjt/collect
+		생성 > 디렉토리 : car-master
+		경로 /pilot-pjt/collect/car-master
+		업로드 /CH06/CarMaster.txt
+		파일 내용 확인
+
+데이터셋 추가 (CarItemBuyList_~.txt)
+	Hue UI > Browser > File
+		경로 /pilot-pjt/collect
+		생성 > 디렉토리 : buy-list
+		경로 /pilot-pjt/collect/buy-list
+		업로드 /CH06/CarItemBuyList_~.txt
+		파일 내용 확인
+
+추가 항목에 대한 Hive External 테이블 정의
+	Hue UI > Query 옵션 > Editor > Hive
+		/CH06/HiveQL/그림-6.58.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			Table : smartcar_master 확인
+		입력 : select * from smartcar_master
+			Execute or CTRL + ENTER
+			결과 확인
+		/CH06/HiveQL/그림-6.60.hql 드래그앤드랍
+			Execute or CTRL + ENTER
+			Table : smartcar_item_buylist 확인
+		입력 : select * from smartcar_item_buylist limit 10;
+			Execute or CTRL + ENTER
+			결과 확인
+
+스파크를 이용한 추가 데이터셋 탐색
+	putty : server02
+		redis, storm 실행 확인
+		spark-shell
+			spark 실행
+		val smartcar_master_df = spark.sqlContext.sql("select * from SmartCar_Master where age >= 18")
+		smartcar_master_df.show()
+		smartcar_master_df.write.saveAsTable("SmartCar_Master_Over18")
+		:quit
+			spark 나가기
+
+	Hue UI
+		Table - refresh
+		Table : smartcar_master_over18 확인
+		입력 : select * from smartcar_master_over18;
+		Execute or CTRL + ENTER
+		결과 확인
+
+탐색 파일럿 실행 4단계 - 데이터 탐색 기능 구현 및 테스트
+	스마트카 상태 정보 데이터 생성 (putty)
+		cd /home/pilot-pjt/working/
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.CarLogMain 20211110 100 &
+		로그 파일 생성 확인 (100MB)
+		로그 시뮬레이터 종료
+			kill -9 [pid]
+
+	스마트카 상태 정보 데이터 적재
+		mv /home/pilot-pjt/working/SmartCar/SmartCarStatusInfo_20211110.txt /home/pilot-pjt/working/car-batch-log/
+
+	스마트카 상태 정보 데이터 적재 확인
+		hdfs dfs -ls -R /pilot-pjt/collect/car-batch-log
+
+	스마트카 운전자 운행 로그 생성
+		cd /home/pilot-pjt/working/
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.DriverLogMain 20211110 100 &
+
+	스마트카 운전자 운행로그 확인
+		cd /home/pilot-pjt/working/driver-realtime-log/
+		tail -f SmartCarDriverInfo.log
+
+	스마트카 운전자의 운행 데이터 적재 확인
+		Hue UI > Browser > HBase
+			DriverCarInfo 테이블 선택
+			실행일자 운행 데이터 확인
+		putty
+			redis-cli
+			127.0.0.1:6379>smembers 실행일자
+				3명이상 발견 확인
+			스마트카 운행 로그 시뮬레이터 종료
+			ps -ef | grep smartcar.log
+			kill -9 [pid]
+
+HBase가 중지되어 있다면 실행
+
+주제 영역 1. 스마트카 상태 정보 모니터링 - 워크플로 작성
+	Hue UI > Browser > Documents
+		폴더 생성 : workflow
+		workflow >
+			폴더 생성 : hive_script
+		workflow > hive_script >
+			폴더 생성 : subject1
+			폴더 생성 : subject2
+			폴더 생성 : subject3
+			폴더 생성 : subject4
+			폴더 생성 : subject5
+		workflow > hive_script > subject1 >
+			문서 생성 - Hive Query
+
+			/CH06/HiveQL/그림-6.69.hql 드래그앤드랍
+			saveAs : create_table_managed_smartcar_status_info.hql
+
+			/CH06/HiveQL/그림-6.70.hql 드래그앤드랍
+			saveAs : alter_partition_smartcar_status_info.hql
+
+			/CH06/HiveQL/그림-6.71.hql 드래그앤드랍
+			saveAs : insert_table_managed_smartcar_status_info.hql
+
+	Hue UI > Query 옵션 > Scheduler > Workflow
+		Hive Query 드래그앤드랍 3연속
+		순서대로 선택
+			create_table_managed_smartcar_status_info.hql
+			alter_partition_smartcar_status_info.hql
+			insert_table_managed_smartcar_status_info.hql
+		매개변수 조정
+			alter~ : working_day=${today}
+			insert~ : working_day=${today}
+		제목 변경 : subject1-workflow
+		저장
+
+	Hue UI > Query 옵션 > Scheduler > Schedule
+		제목변경
+			My Schedule > subject1-예약
+		Choose a Workflow...
+			subject1-workflow 선택
+		How often? > option
+			Everyday at 1:0
+			Timezone : Asia/Seoul 선택
+			From	2050-01-01 00:00
+			To		2050-12-31 23:59
+			매개변수
+			working_day : ${coord:formatTime(coord:dateTzOffset(coord:nominalTime(), "Asia/Seoul"), 'yyyyMMdd')}
+		저장
+		실행 > 예약 제출
+		Schedules
+			예약 확인
+	Documents 선택 - 실습을 위한 즉시 실행
+		subject1-workflow
+			편집 - 매개변수
+				working_date=플럼이 하둡에 적재한 날짜:/pilot-pjt/collect/car-batch-log/wrk_date=날짜정보
+			저장 > 실행 > 제출 20211111
+				progress : 100% 확인
+		jobs preview 작업 미리보기 - 확인
+
+	Hue UI > Query 옵션 > Hive
+		SQL refresh
+		Hive Query 입력
+			select * from managed_smartcar_status_info where biz_date='20211110' limit 10
+		Execute
+		결과확인 10개
+	jobs preview > schedule
+		subject1-예약 : stop > confirm kill
+		닫기
+
+주제 영역 2. 스마트카 운전자 운행 기록 정보
+	휴 > 문서 /workflow/hive_script/subject2
+		Hive Query 생성
+			/CH06/HiveQL/그림-6.97.hql 드래그앤드랍
+			create_table_smartcar_drive_info_2.hql 저장
+			/CH06/HiveQL/그림-6.98.hql 드래그앤드랍
+			insert_table_smartcar_drive_info_2.hql 저장
+			/CH06/HiveQL/그림-6.99.hql 드래그앤드랍
+			create_table_managed_smartcar_drive_info.hql 저장
+			/CH06/HiveQL/그림-6.100.hql 드래그앤드랍
+			insert_table_managed_smartcar_symptom_info.hql 저장
+	휴 > Scheduler > Workflow
+		Hive Query 등록
+			create_table_smartcar_drive_info_2.hql
+			insert_table_smartcar_drive_info_2.hql
+			create_table_managed_smartcar_drive_info.hql
+			insert_table_managed_smartcar_symptom_info.hql
+		매개변수
+			working_day=${today}
+		저장
+	휴 > Scheduler > Schedule
+		제목 : subject2-예약
+		Everyday 02:00 Asia/Seoul
+		From	2050-01-01 00:00
+		To		2050-12-31 23:59
+		매개변수 working_day
+		변수내용 ${coord:formatTime(coord:dateTzOffset(coord:nominalTime(), "Asia/Seoul"), 'yyyyMMdd')}
+		저장 > 실행 > 예약 제출
+	Schedules
+		예약 확인 > 세부 내용 > kill > confirm kill
+	Documents : 최상위
+		subject2-workflow 선택
+		편집 - working_date 조정 : 20211111
+			working_date=플럼이 하둡에 적재한 날짜:/pilot-pjt/collect/car-batch-log/wrk_date=날짜정보
+			저장 > 실행 > 제출
+		progress : 100% 확인
+	휴 > Query 옵션 > Editor > Hive
+		managed_smartcar_drive_info 확인
+		SQL refresh > select * from managed_smartcar_drive_info where biz_date='20211111'
+
+주제 영역 3. 이상 운전 패턴 스마트카 정보
+	휴 > 문서 /workflow/hive_script/subject3
+		Hive Query 생성
+			/CH06/HiveQL/그림-6.102.hql 드래그앤드랍
+			create_table_managed_smartcar_symptom_info.hql 저장
+			/CH06/HiveQL/그림-6.103.hql 드래그앤드랍
+			insert_table_managed_smartcar_symptom_info.hql 저장
+	Workflow 등록 : 주제 1, 주제 2와 동일한 작업
+	실행하여 결과 확인
+
+주제 영역 4. 긴급 점검이 필요한 스마트카 정보
+	휴 > 문서 /workflow/hive_script/subject3
+		Hive Query 생성
+			/CH06/HiveQL/그림-6.110.hql 드래그앤드랍
+			create_table_managed_smartcar_emergency_check_info.hql 저장
+			/CH06/HiveQL/그림-6.111.hql 드래그앤드랍
+			insert_table_managed_smartcar_emergency_check_info.hql 저장
+	Workflow 등록 : 주제 1, 주제 2와 동일한 작업
+		주의 : 담겨있는 데이터 날짜 20211110
+	실행하여 결과 확인
+
+주제 영역 5. 스마트카 운전자 차량용품 구매 이력 정보
+	휴 > 문서 /workflow/hive_script/subject3
+		Hive Query 생성
+			/CH06/HiveQL/그림-6.113.hql 드래그앤드랍
+			create_table_managed_smartcar_item_buylist_info.hql 저장
+			/CH06/HiveQL/그림-6.114.hql 드래그앤드랍
+			insert_table_managed_smartcar_item_buylist_info.hql 저장
+			/CH06/HiveQL/그림-6.115.hql 드래그앤드랍
+			local_save_managed_smartcar_item_buylist_info.hql 저장
+	Workflow 등록 : 주제 1, 주제 2와 동일한 작업
+		주의 : 매개변수 없음
+	실행하여 결과 확인 : table, file
+
+-----
+service redis_6379 stop
+service storm-nimbus stop
+service storm-supervisor stop
+service storm-ui stop
+
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

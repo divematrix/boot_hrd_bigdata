@@ -1,0 +1,101 @@
+00 -----
+	Cloudera Manager를 이용한 Hadoop 설치
+	설치	: HDFS, YARN, Zookeeper
+	설정	: HDFS, YARN
+	재배포	: HDFS
+	테스트	: HDFS, Zookeeper
+01 -----
+
+Cloudera Manager 로그인 > Hadoop 설치
+	Add Cluster - Installation
+		Specify Hosts > Currently Mange Hosts (2) : select all
+		Inspect Cluster
+			Inspect Network Performance
+			Inspect Hosts
+			check : understand the risk!
+	Add Cluster - Configuration
+		Select Services > Custom Services
+			check : HDFS, YARN, ZooKeeper
+		Assign Roles
+			HDFS
+				NameNode : server01
+				SecondaryNameNode : server01
+				Balancer : server01
+				DataNode : server02
+			Cloudera Management Service
+				Service Monitor : server01
+				Host Monitor : server01
+				Event Server : server01
+				Alert Publisher : server01
+			YARN
+				ResourceManager : server01
+				JobHistory Server : server01
+				NodeManager : Same as DataNode
+			ZooKeeper
+				Server : server02
+
+설정
+	CM Service (Cloudera Manager Service) : Stop
+		리소스 많이 쓴다
+	HDFS > Configuration
+		dfs.replication : 2 (복제 계수 설정)
+		dfs.permissions : uncheck (HDFS 접근 권한 해제)
+		dfs.blocksize : 64 MiB (HDFS 블록 크기 변경)
+	YARN 클릭 > Configuration
+		yarn.scheduler.maximum-allocation-mb : 1.5 GiB
+		yarn.nodemanager.resource.memory-mb : 5 GiB
+		yarn.resourcemanager.scheduler.class : FifoScheduler
+	Cluster 1 : restart
+
+구성 재배포
+	HDFS
+
+구동 테스트 : HDFS
+	파일질라
+		/CH02/Sample.txt 를
+		server02 : /home/bigdata 에 복사
+	putty1 : server02
+		cd /home/bigdata
+		hdfs dfs -put Sample.txt /tmp
+		hdfs dfs -ls /tmp
+		hdfs dfs -cat /tmp/Sample.txt
+			저장한 파일 내용 보기
+		hdfs dfs -stat '%b %o %r %u %n' /tmp/Sample.txt
+			저장한 파일 상태 확인
+			파일크기 / 파일블록크기 / 복제수 / 소유자명 / 파일명
+		hdfs dfs -mv /tmp/Sample.txt /tmp/Sample2.txt
+		hdfs fsck
+			파일 시스템 상태 검사
+			전체 크기, 디렉토리 수, 파일 수, 노드 수 등)
+		hdfs dfsadmin -report
+			하둡 파일 시스템의 기본 정보 및 통계
+		hdfs dfsadmin -safemode leave
+			안전모드 해제
+		hdfs fsck / -delete
+			손상된 파일 강제 삭제
+		hdfs fsck / -move
+			손상된 파일 /lost+found 디렉토리로 옮김
+		hdfs dfs -get /tmp/Sample2.txt
+			hdfs 저장된 파일을 로컬 파일 시스템으로 가져오기
+		hdfs dfs -rm /tmp/Sample2.txt
+
+구동 테스트 : Zookeeper - client 명령
+	putty1 : server02
+		zookeeper-client
+			클라이언트에 접속
+		create /pilot-pjt bigdata
+			주키퍼 Z노드 생성 (pilot-pjt키에 bigdata값 맵핑)
+		ls /
+			최상위 폴더 내용 리스트
+		get /pilot-pjt
+			pilot-pjt에 맵핑된 bigdata 출력
+		delete /pilot-pjt
+			노드 삭제
+		quit
+			클라이언트 나가기
+
+-----
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

@@ -1,0 +1,46 @@
+server01.hadoop.com - root / adminuser
+server02.hadoop.com - root / adminuser
+
+Cloudera Manager - admin / admin
+http://server01.hadoop.com:7180		CM 페이지 로그인
+http://server01.hadoop.com:9870		하둡 상태 정보 확인
+http://server02.hadoop.com:8088		스톰 UI
+http://server02.hadoop.com:8888		휴 웹 UI - 데이터 탐색
+
+----- Hadoop 구동 순서 -----
+Zookeeper
+Kafka > HDFS
+Flume > YARN > HBase
+Spark > Hive
+Oozie
+Hue
+
+----- 저사양 시스템 -----
+Flume 중지 >
+Kafka 중지 >
+HBase 중지 >
+Redis, Storm 중지
+
+00 -----
+	Cloudera Manager를 이용한 Hadoop 설치
+	설치	: HDFS, YARN, Zookeeper
+	설정	: HDFS, YARN
+	재배포	: HDFS
+	테스트	: HDFS, Zookeeper
+01 -----
+	스마트카 로그 시뮬레이터 설치
+	설치 > 실행 > 로그 파일 관찰 > 실행중 프로그램 보기 > 정지
+02 -----
+	설치	: Flume, Kafka
+	테스트	: Flume (수집/적재), Kafka
+03 -----
+	설치	: HBase, Redis(putty), Storm(putty)
+	테스트	: HBase, Redis(putty), Storm(putty)
+	기능	: HBase(테이블), Storm(Topology/UI), 적재기능
+05 -----
+	설치	: Hive, Oozie, Hue, spark
+06 -----
+	테스트	: Hue
+07
+
+

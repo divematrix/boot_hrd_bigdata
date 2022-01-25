@@ -18,12 +18,14 @@ public class LogInOutController {
 	// 로그인 폼
 	@GetMapping("login.do")
 	public String logInForm() {
+		System.out.println("CTRL:logInForm");
 		return "user/login";
 	}
 	
 	// 로그인 처리
 	@PostMapping("login.do")
 	public String logInProc(UserVO vo, HttpSession session) {
+		System.out.println("CTRL:logInProc");
 		String result = null;
 		UserVO dbVO = null;
 		
@@ -46,6 +48,7 @@ public class LogInOutController {
 	// 로그아웃 처리
 	@GetMapping("logout.do")
 	public String logOutProc(HttpSession session) {
+		System.out.println("CTRL:logOutProc");
 		session.invalidate();
 		return "redirect:index.jsp";
 	}

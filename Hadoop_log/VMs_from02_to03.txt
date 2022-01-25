@@ -1,0 +1,98 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+-----
+
+Flume 추가
+	Cluster 1 에 서비스 추가 : Flume 선택
+	Agent : server02
+	Flume >	Configuration
+		Java Heap Size of Agent in Bytes : 100 MiB
+	Flume 재시작
+
+Kafka 추가
+	Cluster 1 에 서비스 추가 : Kafka 선택
+	Kafka Broker : server02
+	Kafka > Configuration
+		log.retention.ms : 10 minutes
+	Kafka 재시작
+
+Flume 수집 기능 구현
+	Agent Name : SmartCar_Agent
+	Configuration File
+		/CH03/예제-3.4/SmartCar_Agent.conf 내용 복붙
+
+Kafka 기능 구현
+	putty 1 : server02
+		kafka-topics --create --zookeeper server02.hadoop.com:2181 --replication-factor 1 --partitions 1 --topic SmartCar-Topic
+			출력 Created topic SmartCar-Topic
+			카프카 Topic 생성
+		kafka-console-producer --broker-list server02.hadoop.com:9092 --topic SmartCar-Topic
+			카프카 Producer 사용
+	putty 2 : server02
+		kafka-console-consumer --bootstrap-server server02.hadoop.com:9092 --topic SmartCar-Topic --partition 0 --from-beginning
+			카프카 Consumer 사용
+	putty 1
+		Hello! BigData! 입력
+	putty 2
+		Hello! BigData! 출력
+	putty 1,2
+		ctrl + c
+			카프카 Producer, Consumer 중지
+		kafka-topics --delete --zookeeper server02.hadoop.com:2181 --topic SmartCar-Topic
+			특정 토픽 삭제 명령
+	putty : logout
+	
+Flume 수집 기능 점검
+	putty 1 : server02
+		cd /home/pilot-pjt/working/
+			폴더 이동
+		Java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.CarLogMain 20211030 3 &
+			스마트카 로그 시뮬레이터 실행
+		mv /home/pilot-pjt/working/SmartCar/SmartCarStatusInfo_20211030.txt /home/pilot-pjt/working/car-batch-log/
+			생성된 로그 파일을 car-batch-log 폴더로 이동
+		tail -f /var/log/flume-ng/flume-cmf-flume-AGENT-server02.hadoop.com.log
+			스마트카 상태 정보 로그 파일이 플럼의 표준 출력 로그로 전송됐는지 리눅스 tail 명령어 통해 확인
+		ps -ef | grep smartcar.log
+		kill -9 [시뮬레이터pid]
+
+파일질라
+	/CH04/bigdata.smartcar.flume-1.0.jar 를
+	server02 : /opt/cloudera/parcels/CDH/lib/flume-ng/lib 에 업로드
+
+Flume > Configuration > Configuration File : 수정
+	/CH04/예제-4.2/SmartCar_Agent.conf 내용 복붙
+	Flume 재시작
+
+적재 기능 테스트
+	putty 1 : server02
+		cd /home/pilot-pjt/working
+			폴더 이동
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.CarLogMain 20211101 100 &
+			시뮬레이터 실행
+		cd /home/pilot-pjt/working/SmartCar/
+			폴더 이동
+		ls
+			SmartCarStatusInfo_20211101.txt 파일 확인
+		tail -f SmartCarStatusInfo_20211101.txt
+			파일 내용 출력
+		ctrl + c
+			tail 프로그램 멈추기
+		kill -9 [시뮬레이터pid]
+			시뮬레이터 멈추기
+		mv /home/pilot-pjt/working/SmartCar/SmartCarStatusInfo_20211101.txt /home/pilot-pjt/working/car-batch-log/
+			플럼의 SpoolDir경로로 파일을 옮겨서 플럼의 File 이벤트가 작동되게 한다
+		tail -f /var/log/flume-ng/flume-cmf-flume-AGENT-server02.hadoop.com.log
+			플럼의 실행 로그 출력
+		hdfs dfs -ls -R /pilot-pjt/collect/car-batch-log/
+		hdfs dfs -cat /pilot-pjt/collect/car-batch-log/wrk_date=~/car-batch-log.~.log
+			HDFS에 로그가 적재됬는가 확인
+
+	putty1 : logout
+
+-----
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

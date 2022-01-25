@@ -2,6 +2,8 @@
 ### Custom List ###
 Servers/
 middleProject/
+Test_GroupPjt_Middle/web_MVC_Project/src/main/webapp/resources/img/
+!Test_GroupPjt_Middle/web_MVC_Project/src/main/webapp/resources/img/dummy.txt
 
 ############
 ### Java ###

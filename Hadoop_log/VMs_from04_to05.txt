@@ -1,0 +1,85 @@
+server01 : on, login
+server02 : on, login
+클라우데라 매니저 페이지 로그인
+Cluster 1 : Start
+
+service storm-nimbus start
+service storm-supervisor start
+service storm-ui start
+service redis_6379 start
+-----
+
+HBase 테이블 생성
+	putty 1 : server02
+		hbase org.apache.hadoop.hbase.util.RegionSplitter DriverCarInfo HexStringSplit -c 2 -f cf1
+
+Storm Topology 배포
+	파일질라
+		/CH05/bigdata.smartcar.storm-1.0.jar 를
+		server02 : /home/pilot-pjt/working/ 에 복사
+
+	putty 1
+		cd /home/pilot-pjt/working/
+		storm jar bigdata.smartcar.storm-1.0.jar com.wikibook.bigdata.smartcar.storm.SmartCarDriverTopology DriverCarInfo
+			출력 확인 : o.a.s.StormSubmitter - Finished submitting topology: DriverCarInfo
+
+
+스톰 관리자 UI 접속
+	Topology Summary > DriverCarInfo 확인
+
+Cluster 1 재시작
+
+실시간 적재 기능 테스트
+	putty 1 : server02
+		storm-nimbus
+		storm-supervisor
+		storm-ui
+		redis_6379
+			service ~ status 확인
+			service ~ start 상태 세팅
+		
+		cd /home/pilot-pjt/working/
+		java -cp bigdata.smartcar.loggen-1.0.jar com.wikibook.bigdata.smartcar.loggen.DriverLogMain 20211105 10 &
+			시뮬레이터 실행
+		cd /home/pilot-pjt/working/driver-realtime-log/
+		tail -f SmartCarDriverInfo.log
+			로그 파일 내용 출력
+			로그 발생 확인
+		
+		hbase shell
+			HBase 실행 : HBase에 적재 데이터 확인
+		count 'DriverCarInfo'
+		scan 'DriverCarInfo', {LIMIT=>3}
+		scan 'DriverCarInfo', {STARTROW=>'00000010100502-F0002', LIMIT=>1}
+		exit
+
+	HBase 웹 UI 확인
+
+	putty 1 : server02
+		redis-cli
+		smembers 20211105
+		exit
+
+	파일질라
+		/CH05/bigdata.smartcar.redis-1.0.jar 를
+		server02 : /home/pilot-pjt/working/ 에 복사
+
+	putty 1 : server02
+		cd /home/pilot-pjt/working/
+		java -cp bigdata.smartcar.redis-1.0.jar com.wikibook.smartcar.redis.OverSpeedCarInfo 20211105
+
+작동중인 프로그램 종료
+	ps -ef | grep smartcar.log
+		pid 확인
+	kill -9 [pid]
+
+-----
+service redis_6379 stop
+service storm-nimbus stop
+service storm-supervisor stop
+service storm-ui stop
+
+Cluster 1 : Stop
+클라우데라 매니저 페이지 로그아웃
+server01 : halt
+server02 : halt

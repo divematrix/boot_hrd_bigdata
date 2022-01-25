@@ -1,6 +1,13 @@
 Java_src/
 Test/
 
+### import IgnoreList
+# Eclipse
+# JetBrains
+# VisualStudioCode
+# Backup
+# Windows
+
 ###############
 ### Eclipse ###
 
